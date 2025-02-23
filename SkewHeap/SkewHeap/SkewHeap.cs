@@ -9,23 +9,23 @@
 		private SkewHeapNode<T>? root;
 		private EnumerableEnum order;
 
-        public SkewHeap()
-        {
+		public SkewHeap()
+		{
 			this.order = EnumerableEnum.BLR;
 			this.root = null;
 		}
 
-        public SkewHeap(T value) : this()
-        {
-            this.root = new SkewHeapNode<T>(value);            
-        }
+		public SkewHeap(T value) : this()
+		{
+			this.root = new SkewHeapNode<T>(value);
+		}
 
-        public SkewHeap(SkewHeap<T> root) : this()
-        {
-			this.root = root.root;            
-        }
+		public SkewHeap(SkewHeap<T> root) : this()
+		{
+			this.root = root.root;
+		}
 
-        public void Add(T value)
+		public void Add(T value)
 		{
 			SkewHeapNode<T> addNode = new SkewHeapNode<T>(value);
 
@@ -35,6 +35,19 @@
 		public void Add(SkewHeap<T> root)
 		{
 			this.root = this.Merge(this.root, root.root);
+		}
+
+		public SkewHeapNode<T> Construct(IEnumerable<T> colection)
+		{
+
+			foreach (var node in colection)
+			{
+				SkewHeapNode<T> temp = new SkewHeapNode<T>(node);
+
+				this.root = this.Merge(this.root, temp);
+			}
+
+			return this.root;
 		}
 
 		public SkewHeapNode<T> Merge(SkewHeapNode<T> h1, SkewHeapNode<T> h2)
@@ -69,6 +82,19 @@
 			h1.LeftNode = this.Merge(h2, h1.LeftNode);
 
 			return h1;
+		}
+
+		public void Inorder()
+		{
+			if (root == null)
+				return;
+			else if (this.order == EnumerableEnum.BLR)
+			{
+				inorder(root.left);
+				Console.Write(root.key + "  ");
+				inorder(root.right);
+			}
+			return;
 		}
 
 		public IEnumerator<T> GetEnumerator()
