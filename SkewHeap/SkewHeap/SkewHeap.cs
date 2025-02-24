@@ -11,7 +11,7 @@
 
 		public SkewHeap()
 		{
-			this.order = EnumerableEnum.BLR;
+			this.order = EnumerableEnum.LBR;
 			this.root = null;
 		}
 
@@ -84,15 +84,15 @@
 			return h1;
 		}
 
-		public void Inorder()
+		public void Inorder(SkewHeapNode<T> root)
 		{
 			if (root == null)
 				return;
-			else if (this.order == EnumerableEnum.BLR)
+			else if (this.order == EnumerableEnum.LBR)
 			{
-				inorder(root.left);
-				Console.Write(root.key + "  ");
-				inorder(root.right);
+				this.Inorder(root.LeftNode);
+				Console.Write(root.ToString() + "  ");
+				this.Inorder(root.RightNode);
 			}
 			return;
 		}
