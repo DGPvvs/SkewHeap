@@ -88,17 +88,14 @@
 			this.root = this.Merge(this.root, root.root);
 		}
 
-		public SkewHeapNode<T> Add(IEnumerable<T> collection)
+		public void Add(IEnumerable<T> collection)
 		{
-
 			foreach (var node in collection)
 			{
 				SkewHeapNode<T> temp = new SkewHeapNode<T>(node);
 
 				this.root = this.Merge(this.root, temp);
 			}
-
-			return this.root;
 		}
 
 		public SkewHeapNode<T> Merge(SkewHeapNode<T> h1, SkewHeapNode<T> h2)
