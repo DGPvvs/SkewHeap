@@ -4,14 +4,16 @@
 	using global::SkewHeap.GlobalConst;
 	using System.Collections;
 
-	public class SkewHeap<T> : IEnumerable<T> where T : IComparable<T>
+	public class SkewHeap<T> : IEnumerable<T?> where T : IComparable<T?>
 	{
 		private SkewHeapNode<T>? root;
 		private EnumerableEnum order;
+		private EnumerableEnum foreOrder;
 
 		public SkewHeap()
 		{
 			this.order = EnumerableEnum.LBR;
+			this.foreOrder = EnumerableEnum.BFS;
 			this.root = null;
 		}
 
@@ -23,6 +25,55 @@
 		public SkewHeap(SkewHeap<T> root) : this()
 		{
 			this.root = root.root;
+		}
+
+		public SkewHeapNode<T>? Root
+		{
+			get => this.root;
+		}
+
+		public int Count
+		{
+			get
+			{
+				int count = 0;
+				if (this.root != null)
+				{
+					foreach (var it in this)
+					{
+						count++;
+					}
+				}
+
+				return count;
+			}
+		}
+
+		public T Min
+		{
+			get
+			{
+				if (this.root != null)
+				{
+					return this.root.Value;
+				}
+				else
+				{
+					throw new Exception();
+				}
+			}
+		}
+
+		public EnumerableEnum Order
+		{
+			get => this.order;
+			set => this.order = value;
+		}
+
+		public EnumerableEnum ForeOrder
+		{
+			get => this.foreOrder;
+			set => this.foreOrder = value;
 		}
 
 		public void Add(T value)
@@ -37,10 +88,10 @@
 			this.root = this.Merge(this.root, root.root);
 		}
 
-		public SkewHeapNode<T> Construct(IEnumerable<T> colection)
+		public SkewHeapNode<T> Add(IEnumerable<T> collection)
 		{
 
-			foreach (var node in colection)
+			foreach (var node in collection)
 			{
 				SkewHeapNode<T> temp = new SkewHeapNode<T>(node);
 
@@ -84,34 +135,103 @@
 			return h1;
 		}
 
-		public void Inorder(SkewHeapNode<T> root)
+		public T? Delete()
 		{
-			if (root == null)
-				return;
-			else if (this.order == EnumerableEnum.LBR)
+			if (this.Count > 0)
 			{
-				this.Inorder(root.LeftNode);
-				Console.Write(root.ToString() + "  ");
-				this.Inorder(root.RightNode);
+				T? result = this.root.Value;
+				this.root = this.Merge(this.root.LeftNode, this.root.RightNode);
+				return result;
 			}
+
+			return default;
+		}
+
+		public void Inorder(SkewHeapNode<T> root, string s)
+		{
+			s = s + "   ";
+			if (root == null)
+			{
+				return;
+			}
+
+			if (this.order == EnumerableEnum.LBR)
+			{
+				this.Inorder(root.RightNode, s);
+				Console.WriteLine(s + root.Value.ToString());
+				this.Inorder(root.LeftNode, s);
+			}
+			else if (this.order == EnumerableEnum.BLR)
+			{
+				Console.WriteLine(s + root.Value.ToString());
+				this.Inorder(root.LeftNode, s);
+				this.Inorder(root.RightNode, s);
+			}
+			else if (this.order == EnumerableEnum.LRB)
+			{
+				this.Inorder(root.LeftNode, s);
+				this.Inorder(root.RightNode, s);
+				Console.WriteLine(s + root.Value.ToString());
+			}
+
 			return;
 		}
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			Stack<SkewHeapNode<T>> stack = new Stack<SkewHeapNode<T>>();
-
 			if (this.root != null)
 			{
-				stack.Push(this.root);
+				SkewHeapNode<T> currentNode = this.root;
+
+				if (this.foreOrder == EnumerableEnum.BFS)
+				{
+					Queue<SkewHeapNode<T>> q = new Queue<SkewHeapNode<T>>();
+
+					q.Enqueue(currentNode);
+
+					while (q.Count > 0)
+					{
+						currentNode = q.Dequeue();
+
+
+						if (currentNode.LeftNode != null)
+						{
+							q.Enqueue(currentNode.LeftNode);
+						}
+
+						if (currentNode.RightNode != null)
+						{
+							q.Enqueue(currentNode.RightNode);
+						}
+
+						yield return currentNode.Value;
+					}
+				}
+
+				if (this.foreOrder == EnumerableEnum.DFS)
+				{
+					Stack<SkewHeapNode<T>> q = new Stack<SkewHeapNode<T>>();
+
+					q.Push(currentNode);
+
+					while (q.Count > 0)
+					{
+						currentNode = q.Pop();
+
+						if (currentNode.LeftNode != null)
+						{
+							q.Push(currentNode.LeftNode);
+						}
+
+						if (currentNode.RightNode != null)
+						{
+							q.Push(currentNode.RightNode);
+						}
+
+						yield return currentNode.Value;
+					}
+				}
 			}
-
-			while (stack.Count != 0)
-			{
-
-			}
-
-			throw new NotImplementedException();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();

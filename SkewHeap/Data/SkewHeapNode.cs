@@ -7,7 +7,7 @@
 		private SkewHeapNode<T>? leftNode;
 		private SkewHeapNode<T>? rightNode;
 
-        public SkewHeapNode(T value)
+        public SkewHeapNode(T? value)
         {
 			this.Value = value;
 			this.ParentNode = null;

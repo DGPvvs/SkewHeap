@@ -1,9 +1,11 @@
 ﻿namespace SkewHeap.GlobalConst
 {
-	internal enum EnumerableEnum
+	public enum EnumerableEnum
 	{
 		LBR = 0,
 		BLR,
-		LRB
+		LRB,
+		BFS,
+		DFS
 	}
 }
