@@ -3,6 +3,7 @@
 	using global::SkewHeap.Data;
 	using global::SkewHeap.GlobalConst;
 	using System.Collections;
+	using System.Text;
 
 	public class SkewHeap<T> : IEnumerable<T?> where T : IComparable<T?>
 	{
@@ -144,31 +145,31 @@
 			return default;
 		}
 
-		public void Inorder(SkewHeapNode<T> root, string s)
+		public void Inorder(SkewHeapNode<T> r, string s, ref StringBuilder sb)
 		{
 			s = s + "   ";
-			if (root == null)
+			if (r == null)
 			{
 				return;
 			}
 
 			if (this.order == EnumerableEnum.LBR)
 			{
-				this.Inorder(root.RightNode, s);
-				Console.WriteLine(s + root.Value.ToString());
-				this.Inorder(root.LeftNode, s);
+				this.Inorder(r.RightNode, s, ref sb);
+				sb.AppendLine($"{s}{r.Value.ToString()}");
+				this.Inorder(r.LeftNode, s, ref sb);
 			}
 			else if (this.order == EnumerableEnum.BLR)
 			{
-				Console.WriteLine(s + root.Value.ToString());
-				this.Inorder(root.LeftNode, s);
-				this.Inorder(root.RightNode, s);
+				sb.AppendLine($"{s}{r.Value.ToString()}");
+				this.Inorder(r.LeftNode, s, ref sb);
+				this.Inorder(r.RightNode, s, ref sb);
 			}
 			else if (this.order == EnumerableEnum.LRB)
 			{
-				this.Inorder(root.LeftNode, s);
-				this.Inorder(root.RightNode, s);
-				Console.WriteLine(s + root.Value.ToString());
+				this.Inorder(r.LeftNode, s, ref sb);
+				this.Inorder(r.RightNode, s, ref sb);
+				sb.AppendLine($"{s}{r.Value.ToString()}");
 			}
 
 			return;
@@ -232,5 +233,14 @@
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+		public override string ToString()
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+
+			this.Inorder(this.root, "", ref stringBuilder);
+
+			return stringBuilder.ToString().TrimEnd();
+		}
 	}
 }
